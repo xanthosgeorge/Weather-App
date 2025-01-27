@@ -21,7 +21,7 @@ public class WeatherAppGui extends JFrame {
 
 
         //set the size of gui in (in pixels)
-        setSize(450, 650);
+        setSize(450, 732);
 
 
         //load our gui at the center of the screen
@@ -96,6 +96,13 @@ public class WeatherAppGui extends JFrame {
         add(winspeedText);
 
 
+        // UV index text
+        JLabel uvIndexText = new JLabel("<html><b>UV Index</b> 5</html>");
+        uvIndexText.setBounds(150, 600, 85, 55);
+        uvIndexText.setFont(new Font("Dialog", Font.PLAIN, 16));
+        add(uvIndexText);
+
+
         //search button
         JButton searchButton = new JButton(loadImage("src/assets/search.png"));
 
@@ -149,8 +156,11 @@ public class WeatherAppGui extends JFrame {
 
                 //update windspeed text
 
-                double windspeed = (double) weatherData.get("windspeed");
+                double windspeed = (double) weatherData.get("wind_speed");
                 winspeedText.setText("<html><b>Wind</b> "+ windspeed + "km/h</html>");
+
+                double uv = Double.parseDouble(weatherData.get("uv_index").toString());
+                uvIndexText.setText("<html><b>UV Index</b> "+ uv + "</html>");
             }
         });
         add(searchButton);

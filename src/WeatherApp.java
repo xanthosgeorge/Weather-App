@@ -53,12 +53,19 @@ public class WeatherApp {
             JSONObject jsonObject = (JSONObject) parser.parse(resultJson.toString());
 
             JSONObject hourly = (JSONObject) jsonObject.get("hourly");
+            JSONObject daily = (JSONObject) jsonObject.get("daily");
+
 
             //we want to get current hour data
             // se we need to wed the index of current hour
 
+            //fetch uv index from daily weather report
             JSONArray time = (JSONArray) hourly.get("time");
             int index =  findIndexOfCurrentTime(time);
+            JSONArray time2 = (JSONArray)daily.get("time");
+            int index2 = findIndexOfCurrentTime(time2);
+            JSONArray uv_index_max = (JSONArray)daily.get("uv_index_max");
+            double uv = (double)uv_index_max.get(index2);
 
             //ger temperature
             JSONArray tempratureData = (JSONArray) hourly.get("temperature_2m");
@@ -82,6 +89,7 @@ public class WeatherApp {
             weatherData.put("weather_condition", weatherCondition);
             weatherData.put("humidity", humidity);
             weatherData.put("wind_speed", windSpeed);
+            weatherData.put("uv_index", uv);
 
             return weatherData;
 
