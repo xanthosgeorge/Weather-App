@@ -122,6 +122,9 @@ public class WeatherAppGui extends JFrame {
 
                 //retrieve weather data
                 weatherData = WeatherApp.getWeatherData(userInput);
+                if (weatherData == null) {
+                    return ;
+                }
 
                 //update gui
                 //update weather image

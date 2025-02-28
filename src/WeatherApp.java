@@ -2,6 +2,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -21,6 +22,11 @@ public class WeatherApp {
 
         //get location coordinated using geolocation API
         JSONArray locationData = getLocationData(locationName);
+
+        if (locationData == null) {
+            JOptionPane.showMessageDialog(null, "Location not found !", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
 
         //extract latitude and longtitude data
         JSONObject locationObject = (JSONObject) locationData.get(0);
