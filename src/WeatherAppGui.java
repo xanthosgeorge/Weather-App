@@ -8,11 +8,29 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 public class WeatherAppGui extends JFrame {
 
     private JSONObject weatherData;
-    public WeatherAppGui() {
+    private Connection connection;
+    private List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
+
+    private static  WeatherAppGui instance;
+
+    public static WeatherAppGui getInstance() {
+        if (instance == null) {
+            // If the instance doesn't exist, create it
+            instance = new WeatherAppGui();
+        }
+        return instance;
+    }
+
+    private WeatherAppGui() {
         //set up our gui and add a title
         super("Weather App");
 
@@ -30,6 +48,10 @@ public class WeatherAppGui extends JFrame {
 
         //prevent any resize of the gui
         setResizable(false);
+
+
+        // Initialize database connection
+        initializeDatabaseConnection();
 
 
         addGuidComponents();
@@ -75,6 +97,11 @@ public class WeatherAppGui extends JFrame {
         JLabel humidityImage = new JLabel(loadImage("src/assets/humidity.png"));
         humidityImage.setBounds(15,500,74,66);
         add(humidityImage);
+
+
+        //application icon
+        ImageIcon icon = new ImageIcon("src/assets/cloudy.png");
+        this.setIconImage(icon.getImage());
 
         //humidity Text
         JLabel humidityText = new JLabel("<html><b>Humidity</b> 100%</html>");
@@ -164,14 +191,98 @@ public class WeatherAppGui extends JFrame {
 
                 double uv = Double.parseDouble(weatherData.get("uv_index").toString());
                 uvIndexText.setText("<html><b>UV Index</b> "+ uv + "</html>");
+
+
+                //Insert data to database
+                insertWeatherData(userInput, weatherCondition, temperature);
+
+
             }
+
         });
+        selectWeatherData();
+        System.out.println("Weather App Statistics:");
+        List<String> countryNames = weatherDataList.stream()
+                .map(WeatherData::getCountry)
+                .distinct()
+                .toList();
+
+        for (String countryName : countryNames) {
+           // System.out.println(countryName);
+            double avgTemperature = weatherDataList.stream()
+                    .filter(data -> data.getCountry().equalsIgnoreCase(countryName))
+                    .collect(Collectors.averagingDouble(WeatherData::getTemperature));
+
+            String result = String.format("%s average temperature is %.2f degrees", countryName,avgTemperature);
+            System.out.println(result);
+
+        }
+        System.out.println("");
+        for (String countryName : countryNames) {
+            int countryTimes = weatherDataList.stream()
+                    .filter(data -> data.getCountry().equalsIgnoreCase(countryName))
+                    .toList().size();
+
+            double countryPercentage = (countryTimes / (double) weatherDataList.size()) * 100;
+
+            String result = String.format("%s makes up %.2f%% of Weather Searches",countryName,countryPercentage);
+            System.out.println(result);
+
+        }
         add(searchButton);
 
 
         //
 
     }
+
+    private void initializeDatabaseConnection(){
+        try {
+            // Connect to SQLite database
+            String dbPath = "identifier.sqlite"; // Update this path
+            connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+            // Create table if it doesn't exist
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS WeatherSearch (CountryName TEXT, Weather TEXT, Temperature INT)";
+            connection.createStatement().execute(createTableSQL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void selectWeatherData(){
+        String selectSQL = "SELECT * FROM WeatherSearch";
+        try (PreparedStatement pstmt = connection.prepareStatement(selectSQL)){
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                weatherDataList.add(new WeatherData(
+                        rs.getString("CountryName"),
+                        rs.getString("Weather"),
+                        rs.getDouble("Temperature")
+                ));
+
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private void insertWeatherData(String country, String weather, double temperature) {
+        String insertSQL = "INSERT INTO WeatherSearch (CountryName, Weather, Temperature) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
+            pstmt.setString(1, country);
+            pstmt.setString(2, weather);
+            pstmt.setDouble(3, temperature);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
     private ImageIcon loadImage(String resourcePath)
     {
@@ -188,3 +299,35 @@ public class WeatherAppGui extends JFrame {
         return null;
     }
 }
+
+ class  WeatherData {
+     String country;
+     String weather;
+     double temperature;
+
+     public String getCountry(){
+         return country;
+     }
+
+     public double getTemperature(){
+         return temperature;
+     }
+
+     WeatherData(String country, String weather, double temperature) {
+         this.country = country;
+         this.weather = weather;
+         this.temperature = temperature;
+     }
+
+     // Constructor with country and weather only
+     public WeatherData(String country, String weather) {
+         this(country, weather, 0.0);  // Default temperature set to 0.0
+     }
+
+     // Constructor with country only
+     public WeatherData(String country) {
+         this(country, "Unknown", 0.0);  // Default weather set to "Unknown", temperature to 0.0
+     }
+
+
+ }
