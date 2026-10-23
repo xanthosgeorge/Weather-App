@@ -1,0 +1,55 @@
+.widget {
+    -fx-background-color: #20252d;
+    -fx-base: #2d333d;
+    -fx-control-inner-background: #2a3039;
+    -fx-accent: #a6c9e8;
+    -fx-focus-color: #a6c9e8;
+    -fx-faint-focus-color: transparent;
+    -fx-font-family: "System";
+    -fx-font-size: 12px;
+    -fx-text: #f0f3f7;
+    -fx-muted: #b4bdca;
+    -fx-surface: rgba(37,43,53,0.93);
+}
+.widget.light {
+    -fx-background-color: #edf0f3;
+    -fx-base: #e0e5eb;
+    -fx-control-inner-background: #f2f4f6;
+    -fx-text: #202833;
+    -fx-muted: #4f5d6d;
+    -fx-surface: rgba(239,242,246,0.94);
+    -fx-accent: #365e80;
+    -fx-focus-color: #365e80;
+}
+.label { -fx-text-fill: -fx-text; }
+.location { -fx-font-size: 23px; -fx-font-weight: bold; }
+.temperature { -fx-font-size: 72px; -fx-font-weight: 200; }
+.condition { -fx-font-size: 19px; }
+.muted { -fx-text-fill: -fx-muted; -fx-font-size: 11px; }
+.eyebrow { -fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -fx-muted; }
+.status { -fx-text-fill: -fx-muted; -fx-font-size: 11px; }
+.card { -fx-background-color: -fx-surface; -fx-background-radius: 14px; -fx-padding: 13px 7px; }
+.metric-value { -fx-font-size: 20px; -fx-font-weight: bold; }
+.hour-temp { -fx-font-size: 15px; -fx-font-weight: bold; }
+.button, .combo-box { -fx-background-radius: 9px; -fx-padding: 8px 10px; -fx-cursor: hand; }
+.button { -fx-text-fill: -fx-text; }
+.text-field { -fx-background-radius: 9px; -fx-padding: 9px 10px; -fx-text-fill: -fx-text; -fx-prompt-text-fill: -fx-muted; }
+.hyperlink { -fx-border-color: transparent; -fx-padding: 0; }
+.dialog-pane { -fx-padding: 18px; }
+
+/* Local text surfaces keep custom photos readable even at zero overlay. */
+.custom .label { -fx-background-color: -fx-surface; -fx-background-radius: 6px; -fx-padding: 2px 4px; }
+
+.weather-scroll, .weather-scroll > .viewport { -fx-background-color: transparent; }
+.weather-scroll { -fx-padding: 0; -fx-background-insets: 0; }
+
+.desktop-widget { -fx-background-radius: 16px; }
+.window-bar .button, .window-bar .toggle-button {
+    -fx-padding: 4px 9px;
+    -fx-background-radius: 7px;
+    -fx-text-fill: -fx-text;
+    -fx-cursor: hand;
+}
+.window-bar .toggle-button:selected { -fx-background-color: -fx-accent; -fx-text-fill: #202833; }
+.light .window-bar .toggle-button:selected { -fx-text-fill: #f0f3f7; }
+.window-close:hover { -fx-background-color: #a23e44; -fx-text-fill: #ffffff; }
